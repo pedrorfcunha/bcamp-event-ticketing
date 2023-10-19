@@ -1,24 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Banner from './components/Banner';
+import Card from './components/Card';
+import Navbar from './components/Navbar';
+// import gsap from 'gsap';
+// import { ScrollTrigger } from 'gsap/all';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          BLOCKCHAIN TICKETING APP
+    <div className="">
+      <section className="bannerBg border-b-[1px] border-gray-700">
+        <Navbar />
+        <Banner />
+      </section>
+
+      <section className="container mx-auto py-20">
+        <h3 className="hagrid text-white text-2xl">UPCOMING EVENTS 💫</h3>
+        <p className="text-white mt-3">
+          keepup with event happening closee to you...
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <section className="grid grid-cols-5 gap-4 mt-5">
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+        </section>
+      </section>
     </div>
   );
 }

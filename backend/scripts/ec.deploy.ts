@@ -11,7 +11,7 @@ async function main() {
 
   const ecAddress = await ec.getAddress();
 
-  console.log('ToDoList contract deployed to:', ecAddress);
+  console.log('EventCollectible contract deployed to:', ecAddress);
 
   const verify = async (contractAddress: string, args: any[]) => {
     console.log('Verifying contract...');

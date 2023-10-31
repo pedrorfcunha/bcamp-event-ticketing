@@ -34,7 +34,7 @@ contract CollectibleResolver is SchemaResolver {
         );
 
         _nftContract.mint(
-            attestation.attester,
+            userAddr,
             IEventCollectible.EventData({
                 eventId: eventId,
                 name: name,

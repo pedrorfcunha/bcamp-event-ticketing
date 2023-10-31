@@ -2,17 +2,17 @@
 
 pragma solidity ^0.8.9;
 
-import "@ethereum-attestation-service/contracts/resolver/SchamaResolver.sol";
-import "@ethereum-attestation-service/contracts/IEAS.sol";
-import {EventCollectible} from "./EventCollectible.sol";
+import "@ethereum-attestation-service/eas-contracts/contracts/resolver/SchemaResolver.sol";
+import "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
+import "./IEventCollectible.sol";
 
 contract CollectibleResolver is SchemaResolver {
-    EventCollectible private _nftContract;
+    IEventCollectible private _nftContract;
 
     mapping(bytes32 => uint256) private _attestationTokenIds;
 
     constructor(IEAS eas, address nftContractAddress) SchemaResolver(eas) {
-        _nftContract = EventCollectible(nftContractAddress);
+        _nftContract = IEventCollectible(nftContractAddress);
     }
 
     function onAttest(
@@ -21,9 +21,31 @@ contract CollectibleResolver is SchemaResolver {
     ) internal override returns (bool) {
         require(value == 0, "Value should be zero");
 
-        _nftContract.mint(attestation.attester, "");
+        uint256 eventId;
+        string memory name;
+        string memory location;
+        uint256 date;
+        address userAddr;
+        uint256 userId;
 
-        _attestationTokenIds[attestation.id] = _nftContract.tokenIdCounter();
+        (eventId, name, location, date, userAddr, userId) = abi.decode(
+            attestation.data,
+            (uint256, string, string, uint256, address, uint256)
+        );
+
+        _nftContract.mint(
+            userAddr,
+            IEventCollectible.EventData({
+                eventId: eventId,
+                name: name,
+                location: location,
+                date: date,
+                userAddr: userAddr,
+                userId: userId
+            })
+        );
+
+        _attestationTokenIds[attestation.uid] = _nftContract.tokenIdCounter();
 
         return true;
     }
@@ -34,12 +56,12 @@ contract CollectibleResolver is SchemaResolver {
     ) internal override returns (bool) {
         require(value == 0, "Value should be zero");
 
-        uint256 tokenId = _attestationTokenIds[attestation.id];
+        uint256 tokenId = _attestationTokenIds[attestation.uid];
         require(tokenId != 0, "Token ID not found for this attestation");
 
         _nftContract.burn(tokenId);
 
-        delete _attestationTokenIds[attestation.id];
+        delete _attestationTokenIds[attestation.uid];
 
         return true;
     }

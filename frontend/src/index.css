@@ -63,3 +63,30 @@ body {
   left: 100%;
   top: 0;
 }
+
+
+.modal {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, .8);
+  /* margin: 0 auto; */
+}
+
+.modal-content {
+  width: 500px;
+  border-radius: 20px;
+  display: flex;
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 20px;
+  background: #000;
+  gap: 30px;
+}
+
+button{
+  cursor: pointer
+}

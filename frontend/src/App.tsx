@@ -1,9 +1,9 @@
+import React from 'react';
 import './App.css';
 import Banner from './components/Banner';
 import Card from './components/Card';
 import Navbar from './components/Navbar';
-// import gsap from 'gsap';
-// import { ScrollTrigger } from 'gsap/all';
+import { musicalEvents } from './mockdata';
 
 function App() {
   return (
@@ -16,16 +16,32 @@ function App() {
       <section className="container mx-auto py-20">
         <h3 className="hagrid text-white text-2xl">UPCOMING EVENTS 💫</h3>
         <p className="text-white mt-3">
-          keepup with event happening closee to you...
+          keep up with events happening close to you...
         </p>
-        <section className="grid grid-cols-5 gap-4 mt-5">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+        <section className="grid grid-cols-4 gap-4 mt-5">
+          {musicalEvents.map(
+            ({
+              id,
+              eventName,
+              eventLocation,
+              eventDate,
+              pricing,
+              path,
+              eventDescription,
+              helpLine,
+            }) => (
+              <Card
+                id={id}
+                eventName={eventName}
+                path={path}
+                eventLocation={eventLocation}
+                eventDate={eventDate}
+                pricing={pricing}
+                eventDescription={eventDescription}
+                helpLine={helpLine}
+              />
+            )
+          )}
         </section>
       </section>
     </div>

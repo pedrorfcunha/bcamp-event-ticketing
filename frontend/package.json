@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ethereum-attestation-service/eas-sdk": "^1.2.2-beta.0",
+    "@ethereum-attestation-service/eas-sdk": "^0.29.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -11,7 +11,7 @@
     "@types/node": "^16.18.58",
     "@types/react": "^18.2.25",
     "@types/react-dom": "^18.2.11",
-    "ethers": "^6.8.0",
+    "ethers": "^5.7.2",
     "framer-motion": "^10.16.4",
     "gsap": "^3.12.2",
     "install": "^0.13.0",

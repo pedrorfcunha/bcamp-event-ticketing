@@ -13,11 +13,9 @@ function App() {
         <Banner />
       </section>
 
-      <section className="container mx-auto py-20">
+      <section className="container mx-auto py-20" id="Events">
         <h3 className="hagrid text-white text-2xl">UPCOMING EVENTS 💫</h3>
-        <p className="text-white mt-3">
-          keep up with events happening close to you...
-        </p>
+        <p className="text-white mt-3">keep up with events happening close to you...</p>
         <section className="grid grid-cols-4 gap-4 mt-5">
           {musicalEvents.map(
             ({
@@ -40,7 +38,7 @@ function App() {
                 eventDescription={eventDescription}
                 helpLine={helpLine}
               />
-            )
+            ),
           )}
         </section>
       </section>

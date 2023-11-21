@@ -14,13 +14,14 @@ const Banner = () => {
           </div>
           <div className="px-10 text-white max-w-[500px]">
             <div className="mb-6">
-              Discover the ultimate platform for turbocharging your event
-              promotions. Our cutting-edge platform is meeticulously designed to
-              catapault your events.
+              Discover the ultimate platform for turbocharging your event promotions. Our
+              cutting-edge platform is meeticulously designed to catapault your events.
             </div>
-            <button className="bg-white px-6 py-3 text-black rounded-md font-bold">
-              Get Started 🚀
-            </button>
+            <a href="#Events">
+              <button className="bg-white px-6 py-3 text-black rounded-md font-bold">
+                Get Started 🚀
+              </button>
+            </a>
           </div>
         </div>
         <div className="w-1/12 p-2 border-l-[1px] border-gray-700" />

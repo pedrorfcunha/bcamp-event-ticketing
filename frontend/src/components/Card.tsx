@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { AiTwotoneCalendar } from 'react-icons/ai';
 import CustomButton from './Button';
 import { RiCalendar2Fill } from 'react-icons/ri';
 import { HiLocationMarker } from 'react-icons/hi';
-import { toast } from 'react-toastify';
 import { EAS, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { ethers } from 'ethers';
 import Modal from './Modal';
@@ -41,6 +41,53 @@ const Card = ({
   const [userId, setUserId] = useState('');
   const [submitUID, setSubmitUID] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const paymentHandler = async e => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessingPayment(true);
+
+    const response = await fetch('/.netlify/functions/create-payment-intent', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amount: pricing * 100 }),
+    }).then(res => res.json());
+
+    const {
+      paymentIntent: { client_secret },
+    } = response;
+
+    const paymentResult = await stripe.confirmCardPayment(client_secret, {
+      payment_method: {
+        card: elements.getElement(CardElement),
+        billing_details: {
+          name: 'John',
+        },
+      },
+    });
+
+    setIsProcessingPayment(false);
+
+    if (paymentResult.error) {
+      alert(paymentResult.error);
+    } else {
+      if (paymentResult.paymentIntent.status === 'succeeded') {
+        alert('Payment successful!');
+      }
+    }
+
+    switchInterface('ticket');
+  };
 
   const EASContractAddress = '0xC2679fBD37d54388Ce493F1DB75320D236e1815e';
   const WALLET_SECRET = process.env.REACT_APP_WALLET_SECRET;
@@ -90,6 +137,8 @@ const Card = ({
     ]);
 
     const schemaUID = '0x9c36743493dcb4de49932a078cde4f2bc52ee9289064cd2e4a8c390f3737051e';
+    console.log(eas);
+    console.log('test');
 
     const delegated = await eas.getDelegated();
 
@@ -142,7 +191,7 @@ const Card = ({
     <div className="p-3 rounded-md" key={id}>
       <img src={path} alt="event banner" className="w-full rounded-md h-[180px]" />
       <h3 className="font-extrabold text-white mt-3">{eventName}</h3>
-      <p className="text-[#ddd]">&#8383; {(pricing * 0.0002).toFixed(4)}</p>
+      <p className="text-[#ddd]">U$ {pricing.toFixed(2)}</p>
       <span className="text-[#707070] flex items-center gap-2 ">
         <AiTwotoneCalendar /> {eventDate}
       </span>
@@ -166,10 +215,10 @@ const Card = ({
             </p>
             <img src={path} alt="" className="w-full h-[200px] my-3 rounded-md" />
             <div className="flex justify-between items-center text-slate-300">
-              <h3 className="text-2xl">&#8383; {(pricing * 0.0002).toFixed(4)}</h3>
+              <h3 className="text-2xl">U$ {pricing.toFixed(2)}</h3>
               <button
                 className="bg-gray-300 px-6 py-2 rounded-md text-black"
-                onClick={() => switchInterface('pay')}
+                onClick={() => switchInterface('checkout')}
               >
                 Pay
               </button>
@@ -181,7 +230,37 @@ const Card = ({
             </p>
           </div>
         )}
-        {activeModal === 'pay' && (
+        {activeModal === 'checkout' && (
+          <div>
+            <p className="hagrid text-2xl text-white">{eventName}</p>
+            <p className="text-slate-300 text-sm flex items-center gap-3">
+              <HiLocationMarker />
+              {eventLocation}
+            </p>
+            <p className="text-slate-300 text-sm flex items-center gap-3">
+              <RiCalendar2Fill />
+              {eventDate}
+            </p>
+            <img src={path} alt="" className="w-[460px] h-[200px] my-3 rounded-md" />
+            <div className="my-5 bg-white">
+              <CardElement></CardElement>
+            </div>
+            <div className="flex justify-between items-center text-slate-300">
+              <h3 className="text-2xl">U$ {pricing.toFixed(2)}</h3>
+              <button
+                className="bg-gray-300 px-6 py-2 rounded-md text-black"
+                onClick={paymentHandler}
+                disabled={isProcessingPayment}
+              >
+                Pay
+              </button>
+            </div>
+            <p className="text-slate-300 text-sm mt-3">
+              For clarifications and information, call: <span className="italic">{helpLine}</span>
+            </p>
+          </div>
+        )}
+        {activeModal === 'ticket' && (
           <div className="">
             <div className="flex items-center gap-4 mb-4">
               <img

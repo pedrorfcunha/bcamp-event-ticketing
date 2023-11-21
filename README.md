@@ -34,4 +34,7 @@ Lastly, we're crafting a React application to emulate the end-user experience—
 
 ##### Frontend:
 
-- Include Frontend technologies
+- React
+- Typescript
+- Tailwind
+- React Query

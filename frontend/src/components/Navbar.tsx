@@ -6,11 +6,6 @@ const Navbar = () => {
         alt="event banner"
         className="h-[50px]  rounded-md"
       />
-      <span className="flex gap-5">
-        <button className="bg-white px-4 py-3 text-black rounded-md font-bold">
-          Connect Wallet
-        </button>
-      </span>
     </nav>
   );
 };

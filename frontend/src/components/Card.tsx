@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { AiTwotoneCalendar } from 'react-icons/ai';
-import CustomButton from './Button';
 import { RiCalendar2Fill } from 'react-icons/ri';
 import { HiLocationMarker } from 'react-icons/hi';
 import { EAS, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { ethers } from 'ethers';
+import { QRCodeSVG } from 'qrcode.react';
 import Modal from './Modal';
 
 type Props = {
@@ -71,7 +71,7 @@ const Card = ({
       payment_method: {
         card: elements.getElement(CardElement),
         billing_details: {
-          name: 'John',
+          name: 'Random',
         },
       },
     });
@@ -92,6 +92,7 @@ const Card = ({
   const EASContractAddress = '0xC2679fBD37d54388Ce493F1DB75320D236e1815e';
   const WALLET_SECRET = process.env.REACT_APP_WALLET_SECRET;
   const WALLET_ADDRESS = process.env.REACT_APP_WALLET_ADDRESS;
+  const INFURA_API_KEY = process.env.REACT_APP_INFURA_API_KEY;
 
   function convertDateStringToTimestamp(dateString: string): number {
     const parts = dateString.match(/(\w+) (\d+)-\d+, (\d+)/);
@@ -116,7 +117,7 @@ const Card = ({
   const submitAttestation = async () => {
     setSubmitUID('');
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const provider = new ethers.providers.InfuraProvider('sepolia', INFURA_API_KEY);
 
     const wallet = new ethers.Wallet(WALLET_SECRET);
     const connectedWallet = wallet.connect(provider);
@@ -145,13 +146,13 @@ const Card = ({
     const params = {
       schema: schemaUID,
       recipient: userAddr,
-      expirationTime: 0,
+      expirationTime: BigInt(0),
       revocable: true,
       refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',
       data: encodedData,
-      value: 0,
+      value: BigInt(0),
       nonce: await eas.getNonce(WALLET_ADDRESS),
-      deadline: 0,
+      deadline: BigInt(0),
     };
 
     const result = await delegated.signDelegatedAttestation(params, wallet);
@@ -160,7 +161,7 @@ const Card = ({
       schema: schemaUID,
       data: {
         recipient: userAddr,
-        expirationTime: 0,
+        expirationTime: BigInt(0),
         revocable: true,
         data: encodedData,
       },
@@ -311,23 +312,56 @@ const Card = ({
               value={userAddr}
               onChange={e => setUserAddr(e.target.value)}
             />
-            <button
-              onClick={submitAttestation}
-              disabled={name === '' ? true : false}
-              className="bg-gray-300 px-6 py-2 rounded-md text-black float-right mt-4"
-            >
-              Checkout
-            </button>
-
-            {loading && <p className="text-white mt-[20px]">Loading...</p>}
-            {submitUID && (
+            {submitUID ? (
+              <>
+                <button
+                  onClick={() => switchInterface('qrcode')}
+                  className="bg-gray-300 px-6 py-2 rounded-md text-black float-right mt-4 mr-4"
+                >
+                  QR Code
+                </button>
+                <button
+                  onClick={handleClick}
+                  className="bg-gray-300 px-6 py-2 rounded-md text-black float-right mt-4 mr-4"
+                >
+                  Check you ticket data!
+                </button>
+              </>
+            ) : (
               <button
-                onClick={handleClick}
-                className="bg-gray-300 px-6 py-2 rounded-md text-black float-right mt-4 mr-4"
+                onClick={submitAttestation}
+                disabled={name === '' || loading ? true : false}
+                className="bg-gray-300 px-6 py-2 rounded-md text-black float-right mt-4"
               >
-                Check you ticket data!
+                Checkout
               </button>
             )}
+            {loading && <p className="text-white mt-[20px]">Loading...</p>}
+          </div>
+        )}
+        {activeModal === 'qrcode' && (
+          <div className="">
+            <div className="flex items-center gap-4 mb-4">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShqD1BwMrXrMOkyfasMWkpS06Mvv6wkLCIaQ&usqp=CAU"
+                alt="event banner"
+                className="h-[70px] w-[70px] rounded-md"
+              />
+              <div>
+                <p className="hagrid text-xl text-white">{eventName}</p>
+                <p className="text-slate-300 text-sm flex items-center gap-3">
+                  <HiLocationMarker />
+                  {eventLocation}
+                </p>
+                <p className="text-slate-300 text-sm flex items-center gap-3">
+                  <RiCalendar2Fill className="text-slate-300" />
+                  {eventDate}
+                </p>
+              </div>
+            </div>
+            <div className="w-[450px] p-2 mt-2 mb-4 mx-auto">
+              <QRCodeSVG value={`https://sepolia.easscan.org/attestation/view/${submitUID}`} className="w-[450px] h-[200px] p-2 mt-2 mb-4 mx-auto"/>
+            </div>
           </div>
         )}
       </Modal>

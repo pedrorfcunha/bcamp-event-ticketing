@@ -11,11 +11,11 @@
 
 ## Check the Live
 
-Live URL: https://
+Live URL: https://web3ticketing.netlify.app/
 
 ## Preview
 
-<img src="/public/live-url-preview.png">
+<img src="/frontend/public/live-url-preview.png">
 
 ## Description
 
@@ -77,3 +77,11 @@ REACT_APP_INFURA_API_KEY=YOUR_INFURA_API_KEY
 - `npm netlify dev` or `yarn netlify dev`
 - Visit your app at [http://localhost:8888](http://localhost:8888).
 - Note: The private key is used for signing the delegated attestation.
+
+### Payment Data
+
+In order to confirm the payment for the ticket, you should use this payment mock data:
+- Card number: 4242 4242 4242 4242
+- Expiration (MM/YY): Any date in the future
+- CVC: Any 3 (numeric) digits
+- Zipcode: Any 5 (numeric) digits
